@@ -1,0 +1,51 @@
+# 122977491
+def find_two_indexes(data_1: list[int], expected_result: int) -> tuple[int, list[int]]:
+    data = sorted(data_1)
+    used_indices: set[int] = set()
+    c: int = 0
+    left_pointer: int = 0
+    right_pointer: int = len(data) - 1
+
+    while left_pointer < right_pointer:
+        res = data[left_pointer] + data[right_pointer]
+
+        if res == expected_result:
+            c += 1
+            used_indices.add(left_pointer)
+            used_indices.add(right_pointer)
+            left_pointer += 1
+            right_pointer -= 1
+        elif res > expected_result:
+            right_pointer -= 1
+        else:
+            left_pointer += 1
+
+    unused_elements: list[int] = [data[i] for i in range(len(data)) if i not in used_indices]
+    for i in unused_elements:
+        if i == expected_result:
+            unused_elements.remove(i)
+            c += 1
+
+    return c, unused_elements
+
+
+if __name__ == '__main__':
+    data: list[int] = list(map(int, input().split()))
+    expected_result: int = int(input())
+    pairs_count: int = 0
+    set_data: list[int] = list(set(data))
+
+    if set_data[0] == expected_result:
+        pairs_count = len(data)
+        print(pairs_count)
+    else:
+        while expected_result > 1:
+            pairs_count_1, unused_elements = find_two_indexes(data, expected_result)
+            expected_result -= 1
+            pairs_count += pairs_count_1
+            data = unused_elements
+            if len(unused_elements) == 1:
+                expected_result = 1
+        if len(unused_elements) == 1:
+            pairs_count += 1
+        print(pairs_count)
